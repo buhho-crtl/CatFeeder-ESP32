@@ -7,14 +7,15 @@
 #include <WiFi.h>
 #include <ESP32Servo.h>
 
+//Weight sensor config
 #include "Wire.h"
 #include "HX711.h"
 #include "time.h"
 
 #define DS3231_I2C_ADDRESS 0x68
-
 #define calibration_factor -1050.0 //This value is obtained using the SparkFun_HX711_Calibration sketch
 
+//Servo Config
 #define DOUT  14
 #define CLK  13
 #define SERVO 12
