@@ -181,7 +181,11 @@ void displayTime() {
   minute = timeinfo.tm_min;
   hour = timeinfo.tm_hour;
 
-  readArray();
+  //Read the configuration every 10 minutes
+  if(minute % 10 == 0){
+    getConfig();
+  }
+  
   int n;
   int sizeArray = (sizeof(myArray) / sizeof(myArray[0]));
   
@@ -254,7 +258,7 @@ void sendFeed(long addLimit) {
                 delay(250);
             }
 
-            for (pos = 0; pos <= 40; pos += 1) {
+            for (pos = 0; pos <= 120; pos += 1) {
                 myservo.write(pos);
                 delay(15);
             }
