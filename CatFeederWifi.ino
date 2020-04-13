@@ -41,13 +41,14 @@ struct TimerFeer {
     int hour;
     int minutes;
     int feed;
+    bool enable;
 };
 
-TimerFeer myArray[] = {
-  {9,  30, 5},
-  {14, 00, 5},
-  {17, 25, 1},
-  {22, 30, 5}
+TimerFeer myArray[10] = {
+  {9,  30, 5,true},
+  {14, 00, 5,true},
+  {17, 25, 1,true},
+  {22, 30, 5,true}
 };
 
 void setup() {
@@ -117,8 +118,8 @@ void customDate(){
     tm.tm_year = 2018 - 1900;
     tm.tm_mon = 10;
     tm.tm_mday = 15;
-    tm.tm_hour = 23;
-    tm.tm_min = 59;
+    tm.tm_hour = 9;
+    tm.tm_min = 28;
     tm.tm_sec = 50;
     time_t t = mktime(&tm);
     printf("Setting time: %s", asctime(&tm));
@@ -190,7 +191,7 @@ void displayTime() {
   int sizeArray = (sizeof(myArray) / sizeof(myArray[0]));
   
   for (n = 0; n < sizeArray; ++n) {
-    if ((hour == myArray[n].hour && minute == myArray[n].minutes)) {
+    if ((myArray[n].enable  == true && hour == myArray[n].hour && minute == myArray[n].minutes)) {
       sendFeed(myArray[n].feed);
     }
   }
@@ -288,8 +289,10 @@ void getConfig() {
         Serial.println();
         Serial.println("Iterate array values:");
         Serial.println();
-  
-        myArray[arr.size()]  = { };
+
+        int counter = arr.size();
+
+        Serial.println(counter);
         
         StaticJsonDocument<1500> doc;
         // Deserialize the JSON document
@@ -301,13 +304,14 @@ void getConfig() {
             Serial.println(error.c_str());
             return;
           }
-
-          for (size_t i = 0; i < arr.size(); i++){
+          memset(myArray, 0, sizeof(myArray));
+          for (size_t i = 0; i < counter; i++){
                int hour = doc[i]["feed"];
                myArray[i] = {
                 doc[i]["hour"],
                 doc[i]["minutes"],
-                doc[i]["feed"]
+                doc[i]["feed"],
+                
                 };
           }
                
@@ -328,6 +332,8 @@ void readArray() {
     Serial.println("\t Hour: " + String(myArray[i].hour));
     Serial.println("\t Minutes: " + String(myArray[i].minutes));
     Serial.println("\t feed: " + String(myArray[i].feed));
+    Serial.println("\t enable: " + String(myArray[i].enable));
+    
   }
 
   Serial.println("------------------------------------------------------------------------------------");
@@ -348,6 +354,7 @@ void sendConfig() {
     jsonBuffer.add("hour", myArray[i].hour);
     jsonBuffer.add("minutes", myArray[i].minutes);
     jsonBuffer.add("feed", myArray[i].feed);
+    jsonBuffer.add("enable", myArray[i].enable);
 
     arr.set("/[" + String(i) + "]", jsonBuffer);
   }
